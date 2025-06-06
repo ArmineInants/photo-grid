@@ -26,11 +26,11 @@ export const usePhotos = (initialParams: SearchParams) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [photoService]);
 
   useEffect(() => {
     fetchPhotos(initialParams);
-  }, [fetchPhotos, initialParams]);
+  }, [fetchPhotos, initialParams.query, initialParams.per_page, initialParams.page]);
 
   return {
     photos,
