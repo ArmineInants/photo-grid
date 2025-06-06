@@ -1,0 +1,1 @@
+process.env.VITE_PEXELS_API_KEY = 'test-api-key'; 
