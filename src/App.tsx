@@ -1,21 +1,32 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ThemeProvider } from 'styled-components';
+import { ThemeProvider, type DefaultTheme } from 'styled-components';
 import { GlobalStyle } from './styles/GlobalStyle';
 import { theme } from './styles/theme';
 import { HomePage } from './pages/HomePage';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
-function App() {
+export const App: React.FC = () => {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme as unknown as DefaultTheme}>
       <GlobalStyle />
       <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/photo/:id" element={<div>Photo Details</div>} />
-        </Routes>
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={
+              <ErrorBoundary>
+                <HomePage />
+              </ErrorBoundary>
+            } />
+            <Route path="/photo/:id" element={
+              <ErrorBoundary>
+                <div>Photo Details</div>
+              </ErrorBoundary>
+            } />
+          </Routes>
+        </ErrorBoundary>
       </Router>
     </ThemeProvider>
   );
-}
+};
 
 export default App;
