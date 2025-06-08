@@ -17,7 +17,7 @@ export const useMasonryGrid = ({
   const [columns, setColumns] = useState<Photo[][]>([]);
   const [numColumns, setNumColumns] = useState(3);
   const containerRef = useRef<HTMLDivElement>(null);
-  const resizeTimeoutRef = useRef<number>();
+  const resizeTimeoutRef = useRef<number | undefined>();
   const columnHeightsRef = useRef<number[]>([]);
 
   const updateColumns = useCallback(() => {
@@ -26,8 +26,13 @@ export const useMasonryGrid = ({
     const width = containerRef.current.offsetWidth;
     const minColumnWidth = width < 600 ? 250 : 300;
     const newNumColumns = Math.max(1, Math.floor(width / minColumnWidth));
-    setNumColumns(newNumColumns);
-  }, []);
+    
+    if (newNumColumns !== numColumns) {
+      setNumColumns(newNumColumns);
+      // Reset column heights when number of columns changes
+      columnHeightsRef.current = new Array(newNumColumns).fill(0);
+    }
+  }, [numColumns]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -67,21 +72,39 @@ export const useMasonryGrid = ({
   }, [hasMore, isLoadingMore, onLoadMore]);
 
   useEffect(() => {
+    // Initialize columns array
     const newColumns: Photo[][] = Array.from({ length: numColumns }, () => []);
+    
+    // Initialize column heights if needed
+    if (columnHeightsRef.current.length !== numColumns) {
+      columnHeightsRef.current = new Array(numColumns).fill(0);
+    }
+
+    // Get unique photos
     const uniquePhotos = Array.from(
       new Map(photos.map(photo => [photo.id, photo])).values()
     );
+
+    // Calculate column width for height calculations
+    const containerWidth = containerRef.current?.offsetWidth || 1200;
+    const availableWidth = containerWidth - 32; // Account for padding
+    const columnWidth = (availableWidth - (numColumns - 1) * 16) / numColumns;
     
-    if (columnHeightsRef.current.length === 0) {
-      columnHeightsRef.current = new Array(numColumns).fill(0);
-    }
-    
+    // Distribute photos to columns
     uniquePhotos.forEach((photo) => {
+      // Find the shortest column
       const shortestColumnIndex = columnHeightsRef.current.indexOf(
         Math.min(...columnHeightsRef.current)
       );
-      newColumns[shortestColumnIndex].push(photo);
-      columnHeightsRef.current[shortestColumnIndex] += photo.height / photo.width;
+
+      // Safety check for valid column index
+      if (shortestColumnIndex >= 0 && shortestColumnIndex < numColumns) {
+        newColumns[shortestColumnIndex].push(photo);
+        // Calculate height based on aspect ratio and column width
+        const aspectRatio = photo.width / photo.height;
+        const photoHeight = columnWidth / aspectRatio;
+        columnHeightsRef.current[shortestColumnIndex] += photoHeight;
+      }
     });
 
     setColumns(newColumns);
@@ -90,26 +113,10 @@ export const useMasonryGrid = ({
   const totalHeight = useMemo(() => {
     if (photos.length === 0) return 0;
     
-    const containerWidth = containerRef.current?.offsetWidth || 1200;
-    const availableWidth = containerWidth - 32;
-    const columnWidth = (availableWidth - (numColumns - 1) * 16) / numColumns;
-    
-    const maxColumnHeight = Math.max(...columnHeightsRef.current) * columnWidth;
+    // Calculate total height based on the tallest column
+    const maxColumnHeight = Math.max(...columnHeightsRef.current);
     return Math.max(maxColumnHeight, containerRef.current?.clientHeight || 800);
   }, [photos, numColumns, containerRef]);
-
-  const updateHeights = useCallback(() => {
-    if (!containerRef.current) return;
-    
-    const width = containerRef.current.offsetWidth;
-    const minColumnWidth = width < 600 ? 250 : 300;
-    const newNumColumns = Math.max(1, Math.floor(width / minColumnWidth));
-    
-    if (newNumColumns !== numColumns) {
-      columnHeightsRef.current = new Array(newNumColumns).fill(0);
-      setNumColumns(newNumColumns);
-    }
-  }, [numColumns]);
 
   return {
     columns,

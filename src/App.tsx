@@ -4,6 +4,7 @@ import { GlobalStyle } from './styles/GlobalStyle';
 import { theme } from './styles/theme';
 import { HomePage } from './pages/HomePage';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { PhotoDetailsPage } from './pages/PhotoDetailsPage';
 
 export const App: React.FC = () => {
   return (
@@ -19,7 +20,7 @@ export const App: React.FC = () => {
             } />
             <Route path="/photo/:id" element={
               <ErrorBoundary>
-                <div>Photo Details</div>
+                <PhotoDetailsPage />
               </ErrorBoundary>
             } />
           </Routes>
