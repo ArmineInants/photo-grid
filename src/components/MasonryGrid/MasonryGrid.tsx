@@ -16,7 +16,7 @@ const GridContainer = styled.div`
   position: relative;
   width: 100%;
   padding: ${props => props.theme.spacing.md};
-  height: 100vh;
+  height: calc(100vh - 68px);
   overflow-y: auto;
 `;
 
@@ -105,6 +105,8 @@ const PhotoCard = memo<PhotoCardProps>(
       {!showPlaceholder && (
         <PhotoImage
           src={photo.src.medium}
+          srcSet={`${photo.src.small} 300w, ${photo.src.medium} 600w`}
+          sizes="(max-width: 600px) 300px, 600px"
           alt={photo.alt || 'Photo'}
           loading="lazy"
           $isLoaded={isLoaded}
