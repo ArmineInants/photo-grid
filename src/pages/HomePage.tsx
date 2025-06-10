@@ -1,10 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Photo } from '../types/photo';
-import { MasonryGrid } from '../components/MasonryGrid';
 import { usePhotos } from '../hooks/usePhotos';
-import { LoadingState } from '../components/LoadingState';
-import { ErrorState } from '../components/ErrorState';
+import { MasonryGrid, LoadingState, ErrorState } from '../components';
 import styled from 'styled-components';
 
 const PageContainer = styled.div`

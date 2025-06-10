@@ -3,7 +3,7 @@ import { ThemeProvider, type DefaultTheme } from 'styled-components';
 import { GlobalStyle } from './styles/GlobalStyle';
 import { theme } from './styles/theme';
 import { HomePage } from './pages/HomePage';
-import { ErrorBoundary } from './components/ErrorBoundary';
+import { ErrorBoundary } from './components';
 import { PhotoDetailsPage } from './pages/PhotoDetailsPage';
 
 export const App: React.FC = () => {

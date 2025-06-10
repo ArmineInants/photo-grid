@@ -2,7 +2,7 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { usePhotoDetails } from "../hooks/usePhotoDetails";
-import { ErrorState } from "../components/ErrorState";
+import { ErrorState } from "../components";
 
 const shimmer = keyframes`
   0% {
@@ -14,7 +14,7 @@ const shimmer = keyframes`
 `;
 
 const PageContainer = styled.div`
-  max-width: 1200px;
+  max-width: ${props => props.theme.container.maxWidth};
   margin: 0 auto;
   padding: ${props => props.theme.spacing.lg};
 `;

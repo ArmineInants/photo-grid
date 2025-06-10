@@ -28,6 +28,9 @@ declare module 'styled-components' {
       tablet: string;
       desktop: string;
     };
+    container: {
+      maxWidth: string;
+    };
   }
 }
 
@@ -57,5 +60,8 @@ export const theme = {
     mobile: '320px',
     tablet: '768px',
     desktop: '1024px',
+  },
+  container: {
+    maxWidth: '1200px',
   },
 };
