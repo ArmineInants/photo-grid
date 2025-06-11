@@ -1,8 +1,9 @@
-import React, { useState, useCallback, memo, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import type { Photo } from '../../types/photo';
 import { useMasonryGrid } from '../../hooks/useMasonryGrid';
 import { LoadingState, ErrorBoundary } from '../index';
+import { PhotoCard } from '../PhotoCard/PhotoCard';
 
 interface MasonryGridProps {
   photos: Photo[];
@@ -34,95 +35,6 @@ const Column = styled.div`
   flex-direction: column;
   gap: ${props => props.theme.spacing.md};
 `;
-
-const PhotoCardWrapper = styled.div<{ $aspectRatio: number }>`
-  position: relative;
-  width: 100%;
-  cursor: pointer;
-  transition: transform 0.2s ease-in-out;
-  padding-bottom: ${props => (1 / props.$aspectRatio) * 100}%;
-  background: ${props => props.theme.colors.background};
-  overflow: hidden;
-
-  &:hover {
-    transform: scale(1.02);
-  }
-`;
-
-const PhotoImage = styled.img<{ $isLoaded: boolean }>`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: ${props => props.theme.radius.md};
-  opacity: ${props => (props.$isLoaded ? 1 : 0)};
-  transition: opacity 0.3s ease-in-out;
-`;
-
-const PhotoPlaceholder = styled.div<{ $aspectRatio: number }>`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    ${props => props.theme.colors.background} 25%, 
-    ${props => props.theme.colors.gray} 50%, 
-    ${props => props.theme.colors.background} 75%
-  );
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-  border-radius: ${props => props.theme.radius.md};
-  aspect-ratio: ${props => props.$aspectRatio};
-
-  @keyframes loading {
-    0% {
-      background-position: 200% 0;
-    }
-    100% {
-      background-position: -200% 0;
-    }
-  }
-`;
-
-interface PhotoCardProps {
-  photo: Photo;
-  onPhotoClick?: (photo: Photo) => void;
-  onImageLoad: (photoId: number) => void;
-  isLoaded: boolean;
-  showPlaceholder: boolean;
-}
-
-const PhotoCard = memo<PhotoCardProps>(
-  ({ photo, onPhotoClick, onImageLoad, isLoaded, showPlaceholder }) => (
-    <PhotoCardWrapper
-      onClick={() => onPhotoClick?.(photo)}
-      $aspectRatio={photo.width / photo.height}
-    >
-      <PhotoPlaceholder $aspectRatio={photo.width / photo.height} />
-      {!showPlaceholder && (
-        <PhotoImage
-          src={photo.src.medium}
-          srcSet={`${photo.src.tiny} 100w, ${photo.src.small} 300w, ${photo.src.small} 600w, ${photo.src.medium} 1200w`}
-          sizes="(max-width: 300px) 100px, (max-width: 600px) 300px, (max-width: 1200px) 600px, 1200px"
-          alt={photo.alt || 'Photo'}
-          loading="lazy"
-          decoding="async"
-          crossOrigin="anonymous"
-          referrerPolicy="no-referrer"
-          width={photo.width}
-          height={photo.height}
-          $isLoaded={isLoaded}
-          onLoad={() => onImageLoad(photo.id)}
-        />
-      )}
-    </PhotoCardWrapper>
-  )
-);
-
-PhotoCard.displayName = 'PhotoCard';
 
 interface ErrorFallbackProps {
   error: Error;

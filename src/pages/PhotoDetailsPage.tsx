@@ -1,17 +1,9 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import { usePhotoDetails } from "../hooks/usePhotoDetails";
 import { ErrorState } from "../components";
-
-const shimmer = keyframes`
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-`;
+import { PhotoCard } from "../components/PhotoCard/PhotoCard";
 
 const PageContainer = styled.div`
   max-width: ${props => props.theme.container.maxWidth};
@@ -24,26 +16,6 @@ const PhotoContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${props => props.theme.spacing.lg};
-`;
-
-const ImageWrapper = styled.div<{ $aspectratio: number }>`
-  position: relative;
-  width: 100%;
-  padding-bottom: ${props => (1 / props.$aspectratio) * 100}%;
-  background-color: ${props => props.theme.colors.grayLight};
-  border-radius: ${props => props.theme.radius.lg};
-  overflow: hidden;
-`;
-
-const PhotoImage = styled.img<{ $isLoaded: boolean }>`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: ${props => props.$isLoaded ? 1 : 0};
-  transition: opacity 0.3s ease-in-out;
 `;
 
 const PhotoInfo = styled.div`
@@ -74,9 +46,19 @@ const PhotographerInfo = styled.div`
   margin-top: ${props => props.theme.spacing.sm};
 `;
 
+const PhotographerLink = styled.a`
+  color: ${props => props.theme.colors.primary};
+  text-decoration: none;
+  font-weight: 500;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 const BackButton = styled.button`
   padding: ${props => props.theme.spacing.sm} ${props => props.theme.spacing.md};
-  background-color: ${props => props.theme.colors.text};
+  background-color: ${props => props.theme.colors.primary};
   color: white;
   border: none;
   border-radius: ${props => props.theme.radius.sm};
@@ -87,56 +69,6 @@ const BackButton = styled.button`
     opacity: 0.9;
   }
 `;
-
-const Placeholder = styled.div`
-  background: linear-gradient(
-    90deg,
-    ${props => props.theme.colors.grayLight} 25%,
-    ${props => props.theme.colors.gray} 50%,
-    ${props => props.theme.colors.grayLight} 75%
-  );
-  background-size: 200% 100%;
-  animation: ${shimmer} 1.5s infinite;
-  border-radius: ${props => props.theme.radius.lg};
-`;
-
-const ImagePlaceholder = styled(Placeholder)`
-  width: 100%;
-  padding-bottom: 75%; /* Default aspect ratio */
-`;
-
-const TitlePlaceholder = styled(Placeholder)`
-  width: 70%;
-  height: 2rem;
-  margin: 0;
-`;
-
-const DescriptionPlaceholder = styled(Placeholder)`
-  width: 100%;
-  height: 1.1rem;
-  margin: 0.5rem 0;
-`;
-
-const PhotographerPlaceholder = styled(Placeholder)`
-  width: 40%;
-  height: 1.5rem;
-  margin-top: ${props => props.theme.spacing.sm};
-`;
-
-const PhotoDetailsPlaceholder = () => (
-  <PageContainer>
-    <BackButton disabled>← Back to Gallery</BackButton>
-    <PhotoContainer>
-      <ImagePlaceholder />
-      <PhotoInfo>
-        <TitlePlaceholder />
-        <DescriptionPlaceholder />
-        <DescriptionPlaceholder />
-        <PhotographerPlaceholder />
-      </PhotoInfo>
-    </PhotoContainer>
-  </PageContainer>
-);
 
 export const PhotoDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -149,7 +81,17 @@ export const PhotoDetailsPage: React.FC = () => {
   };
 
   if (loading) {
-    return <PhotoDetailsPlaceholder />;
+    return (
+      <PageContainer>
+        <BackButton disabled>← Back to Gallery</BackButton>
+        <PhotoContainer>
+          <PhotoInfo>
+            <Title>Loading...</Title>
+            <Description>Please wait while we load the photo details.</Description>
+          </PhotoInfo>
+        </PhotoContainer>
+      </PageContainer>
+    );
   }
 
   if (error) {
@@ -160,35 +102,29 @@ export const PhotoDetailsPage: React.FC = () => {
     return <ErrorState message="Photo not found" onRetry={handleBack} />;
   }
 
-  // Calculate aspect ratio
-  const aspectratio = photo.width / photo.height;
-
   return (
     <PageContainer>
       <BackButton onClick={handleBack}>← Back to Gallery</BackButton>
       <PhotoContainer>
-        <ImageWrapper $aspectratio={aspectratio}>
-          <PhotoImage 
-            src={photo.src.large2x}
-            srcSet={`${photo.src.tiny} 100w, ${photo.src.small} 300w, ${photo.src.medium} 600w, ${photo.src.large} 1200w`}
-            sizes="(max-width: 300px) 100px, (max-width: 600px) 300px, (max-width: 1200px) 600px, 1200px"
-            alt={photo.alt || 'Photo'}
-            loading="eager"
-            decoding="sync"
-            crossOrigin="anonymous"
-            referrerPolicy="no-referrer"
-            width={photo.width}
-            height={photo.height}
-            $isLoaded={imageLoaded}
-            onLoad={() => setImageLoaded(true)}
-          />
-        </ImageWrapper>
+        <PhotoCard
+          photo={photo}
+          variant="detail"
+          priority={true}
+          isLoaded={imageLoaded}
+          onImageLoad={() => setImageLoaded(true)}
+        />
         <PhotoInfo>
           <Title>{photo.alt || 'Untitled'}</Title>
           <Description>{photo.alt}</Description>
           <PhotographerInfo>
             <span>Photo by</span>
-            <strong>{photo.photographer}</strong>
+            <PhotographerLink 
+              href={photo.photographer_url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              {photo.photographer}
+            </PhotographerLink>
           </PhotographerInfo>
         </PhotoInfo>
       </PhotoContainer>

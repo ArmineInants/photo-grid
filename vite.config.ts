@@ -1,12 +1,31 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { splitVendorChunkPlugin } from 'vite';
+import viteCompression from 'vite-plugin-compression';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    splitVendorChunkPlugin()
+    splitVendorChunkPlugin(),
+    viteCompression({
+      algorithm: 'gzip',
+      ext: '.gz',
+      threshold: 10240, // Only compress files larger than 10kb
+      deleteOriginFile: false, // Keep original files
+      compressionOptions: {
+        level: 9, // Maximum compression
+      },
+    }),
+    viteCompression({
+      algorithm: 'brotliCompress',
+      ext: '.br',
+      threshold: 10240,
+      deleteOriginFile: false,
+      compressionOptions: {
+        level: 11, // Maximum compression
+      },
+    }),
   ],
   build: {
     target: 'esnext',
