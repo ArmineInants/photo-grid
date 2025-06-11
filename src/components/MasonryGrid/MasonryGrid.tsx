@@ -105,10 +105,15 @@ const PhotoCard = memo<PhotoCardProps>(
       {!showPlaceholder && (
         <PhotoImage
           src={photo.src.medium}
-          srcSet={`${photo.src.small} 300w, ${photo.src.medium} 600w`}
-          sizes="(max-width: 600px) 300px, 600px"
+          srcSet={`${photo.src.tiny} 100w, ${photo.src.small} 300w, ${photo.src.small} 600w, ${photo.src.medium} 1200w`}
+          sizes="(max-width: 300px) 100px, (max-width: 600px) 300px, (max-width: 1200px) 600px, 1200px"
           alt={photo.alt || 'Photo'}
           loading="lazy"
+          decoding="async"
+          crossOrigin="anonymous"
+          referrerPolicy="no-referrer"
+          width={photo.width}
+          height={photo.height}
           $isLoaded={isLoaded}
           onLoad={() => onImageLoad(photo.id)}
         />

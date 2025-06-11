@@ -26,13 +26,12 @@ const SearchInput = styled.input`
   
   &:focus {
     outline: none;
-    border-color: #007bff;
   }
 `;
 
 const SearchButton = styled.button`
   padding: 0.5rem 1rem;
-  background: #007bff;
+  background: #000000;
   color: white;
   border: none;
   border-radius: 4px;
@@ -41,7 +40,7 @@ const SearchButton = styled.button`
   width: 120px;
   
   &:hover {
-    background: #0056b3;
+    opacity: 0.8;
   }
   
   &:disabled {

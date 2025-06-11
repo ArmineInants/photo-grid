@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
 import { usePhotoDetails } from "../hooks/usePhotoDetails";
@@ -26,11 +26,24 @@ const PhotoContainer = styled.div`
   gap: ${props => props.theme.spacing.lg};
 `;
 
-const PhotoImage = styled.img`
+const ImageWrapper = styled.div<{ $aspectratio: number }>`
+  position: relative;
   width: 100%;
-  height: auto;
+  padding-bottom: ${props => (1 / props.$aspectratio) * 100}%;
+  background-color: ${props => props.theme.colors.grayLight};
   border-radius: ${props => props.theme.radius.lg};
+  overflow: hidden;
+`;
+
+const PhotoImage = styled.img<{ $isLoaded: boolean }>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  opacity: ${props => props.$isLoaded ? 1 : 0};
+  transition: opacity 0.3s ease-in-out;
 `;
 
 const PhotoInfo = styled.div`
@@ -61,19 +74,9 @@ const PhotographerInfo = styled.div`
   margin-top: ${props => props.theme.spacing.sm};
 `;
 
-const PhotographerLink = styled.a`
-  color: ${props => props.theme.colors.primary};
-  text-decoration: none;
-  font-weight: 500;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
 const BackButton = styled.button`
   padding: ${props => props.theme.spacing.sm} ${props => props.theme.spacing.md};
-  background-color: ${props => props.theme.colors.primary};
+  background-color: ${props => props.theme.colors.text};
   color: white;
   border: none;
   border-radius: ${props => props.theme.radius.sm};
@@ -99,7 +102,7 @@ const Placeholder = styled.div`
 
 const ImagePlaceholder = styled(Placeholder)`
   width: 100%;
-  aspect-ratio: 16/9;
+  padding-bottom: 75%; /* Default aspect ratio */
 `;
 
 const TitlePlaceholder = styled(Placeholder)`
@@ -139,9 +142,10 @@ export const PhotoDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { photo, loading = true, error } = usePhotoDetails(Number(id));
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleBack = () => {
-    navigate(-1);
+    navigate('/');
   };
 
   if (loading) {
@@ -156,26 +160,35 @@ export const PhotoDetailsPage: React.FC = () => {
     return <ErrorState message="Photo not found" onRetry={handleBack} />;
   }
 
+  // Calculate aspect ratio
+  const aspectratio = photo.width / photo.height;
+
   return (
     <PageContainer>
       <BackButton onClick={handleBack}>← Back to Gallery</BackButton>
       <PhotoContainer>
-        <PhotoImage 
-          src={photo.src.large2x} 
-          alt={photo.alt || 'Photo'} 
-        />
+        <ImageWrapper $aspectratio={aspectratio}>
+          <PhotoImage 
+            src={photo.src.large2x}
+            srcSet={`${photo.src.tiny} 100w, ${photo.src.small} 300w, ${photo.src.medium} 600w, ${photo.src.large} 1200w`}
+            sizes="(max-width: 300px) 100px, (max-width: 600px) 300px, (max-width: 1200px) 600px, 1200px"
+            alt={photo.alt || 'Photo'}
+            loading="eager"
+            decoding="sync"
+            crossOrigin="anonymous"
+            referrerPolicy="no-referrer"
+            width={photo.width}
+            height={photo.height}
+            $isLoaded={imageLoaded}
+            onLoad={() => setImageLoaded(true)}
+          />
+        </ImageWrapper>
         <PhotoInfo>
           <Title>{photo.alt || 'Untitled'}</Title>
           <Description>{photo.alt}</Description>
           <PhotographerInfo>
             <span>Photo by</span>
-            <PhotographerLink 
-              href={photo.photographer_url} 
-              target="_blank" 
-              rel="noopener noreferrer"
-            >
-              {photo.photographer}
-            </PhotographerLink>
+            <strong>{photo.photographer}</strong>
           </PhotographerInfo>
         </PhotoInfo>
       </PhotoContainer>
