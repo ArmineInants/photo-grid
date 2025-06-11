@@ -3,8 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, type DefaultTheme } from 'styled-components';
 import { GlobalStyle } from './styles/GlobalStyle';
 import { theme } from './styles/theme';
-import { ErrorBoundary } from './components';
-import { LoadingState } from './components/LoadingState/LoadingState';
+import { ErrorBoundary, LoadingSpinner } from './components';
 
 const HomePage = lazy(() => import('./pages/HomePage').then(mod => ({ default: mod.HomePage })));
 const PhotoDetailsPage = lazy(() => import('./pages/PhotoDetailsPage').then(mod => ({ default: mod.PhotoDetailsPage })));
@@ -15,7 +14,7 @@ export const App: React.FC = () => {
       <GlobalStyle />
       <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <ErrorBoundary>
-          <Suspense fallback={<LoadingState count={3} />}>
+          <Suspense fallback={<LoadingSpinner />}>
             <Routes>
               <Route path="/" element={
                 <ErrorBoundary>

@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import type { Photo } from '../../types/photo';
 import { useMasonryGrid } from '../../hooks/useMasonryGrid';
-import { LoadingState, ErrorBoundary } from '../index';
+import { ErrorBoundary } from '../index';
 import { PhotoCard } from '../PhotoCard/PhotoCard';
 
 interface MasonryGridProps {
@@ -107,7 +107,6 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({
           ))}
         </GridContent>
       </GridContainer>
-      {isLoadingMore && <LoadingState />}
     </ErrorBoundary>
   );
 };

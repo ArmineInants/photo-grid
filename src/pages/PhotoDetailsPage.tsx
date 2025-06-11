@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { usePhotoDetails } from "../hooks/usePhotoDetails";
-import { ErrorState } from "../components";
-import { PhotoCard } from "../components/PhotoCard/PhotoCard";
+import { ErrorState, PhotoCard, LoadingSpinner } from "../components";
 
 const PageContainer = styled.div`
   max-width: ${props => props.theme.container.maxWidth};
@@ -84,12 +83,7 @@ export const PhotoDetailsPage: React.FC = () => {
     return (
       <PageContainer>
         <BackButton disabled>← Back to Gallery</BackButton>
-        <PhotoContainer>
-          <PhotoInfo>
-            <Title>Loading...</Title>
-            <Description>Please wait while we load the photo details.</Description>
-          </PhotoInfo>
-        </PhotoContainer>
+        <LoadingSpinner />
       </PageContainer>
     );
   }

@@ -149,5 +149,3 @@ export const PhotoCard = memo<PhotoCardProps>(
     );
   }
 );
-
-PhotoCard.displayName = 'PhotoCard';

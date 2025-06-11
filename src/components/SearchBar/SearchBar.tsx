@@ -5,8 +5,10 @@ const SearchContainer = styled.div`
   padding: 1rem;
   background: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
 `;
 
@@ -23,6 +25,8 @@ const SearchInput = styled.input`
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
+  height: 36px;
+  width: 70%;
   
   &:focus {
     outline: none;
@@ -37,7 +41,8 @@ const SearchButton = styled.button`
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  width: 120px;
+  height: 36px;
+  width: 30%;
   
   &:hover {
     opacity: 0.8;
@@ -75,7 +80,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch, isLoading, defau
           disabled={isLoading}
         />
         <SearchButton type="submit" disabled={isLoading}>
-          {isLoading ? 'Searching...' : 'Search'}
+          Search
         </SearchButton>
       </SearchForm>
     </SearchContainer>

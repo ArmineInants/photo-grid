@@ -1,28 +1,5 @@
 import React, { Component, type ErrorInfo } from 'react';
-import styled from 'styled-components';
-
-const ErrorBoundaryContainer = styled.div`
-  padding: ${props => props.theme.spacing.lg};
-  margin: ${props => props.theme.spacing.md};
-  background-color: ${props => props.theme.colors.error}1A;
-  border: 1px solid ${props => props.theme.colors.error}2A;
-  border-radius: ${props => props.theme.radius.md};
-  color: ${props => props.theme.colors.error};
-`;
-
-const RetryButton = styled.button`
-  margin-top: ${props => props.theme.spacing.md};
-  padding: ${props => props.theme.spacing.sm} ${props => props.theme.spacing.md};
-  background-color: ${props => props.theme.colors.primary};
-  color: white;
-  border: none;
-  border-radius: ${props => props.theme.radius.sm};
-  cursor: pointer;
-  
-  &:hover {
-    opacity: 0.9;
-  }
-`;
+import { ErrorState } from '../index';
 
 interface Props {
   children: React.ReactNode;
@@ -61,15 +38,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      return this.props.fallback || (
-        <ErrorBoundaryContainer>
-          <h3>Something went wrong</h3>
-          <p>{this.state.error?.message}</p>
-          <RetryButton onClick={this.handleReset}>
-            Try Again
-          </RetryButton>
-        </ErrorBoundaryContainer>
-      );
+      return <ErrorState message={this.state.error?.message || 'Something went wrong'} onRetry={this.handleReset} />;
     }
 
     return this.props.children;

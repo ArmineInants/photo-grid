@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { splitVendorChunkPlugin } from 'vite';
 import viteCompression from 'vite-plugin-compression';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -26,6 +27,12 @@ export default defineConfig({
         level: 11, // Maximum compression
       },
     }),
+    visualizer({
+      filename: 'dist/stats.html',
+      open: true,
+      gzipSize: true,
+      brotliSize: true,
+    }),
   ],
   build: {
     target: 'esnext',
@@ -41,14 +48,14 @@ export default defineConfig({
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'styled-components': ['styled-components'],
-          'utils': ['axios']
+          'utils': ['axios'],
         }
       }
     },
     chunkSizeWarningLimit: 1000
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom', 'styled-components', 'axios']
+    include: ['react', 'react-dom', 'react-router-dom', 'styled-components', 'axios'],
   },
   server: {
     headers: {

@@ -30,7 +30,7 @@ export const useMasonryGrid = ({
     if (!container) return;
 
     const width = container.offsetWidth;
-    const minColumnWidth = width < 600 ? 300 : 350;
+    const minColumnWidth = 350;
     const newNumColumns = Math.max(1, Math.floor(width / minColumnWidth));
 
     if (newNumColumns !== numColumns) {
